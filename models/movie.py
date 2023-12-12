@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Float
 
 
 class Movie(Base):
-  __tablename = "movies"
+  __tablename__ = "movies"
 
   id = Column(Integer, primary_key=True)
   title = Column(String)

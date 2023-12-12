@@ -8,7 +8,7 @@ from fastapi.security import HTTPBearer
 from things import movies as movies
 
 from config.database import Session, Base, engine
-from models.movie import Movie
+from models.movie import Movie as MovieModel
 
 
 # Inicializar app
@@ -26,7 +26,6 @@ class User(BaseModel):
   password:str
 
 class Movies(BaseModel):
-  id: Optional[int] = None
   title: str = Field(min_length=5, max_length=15)
   overview: str = Field(min_length=10, max_length=50)
   year: int = Field(le=2024)
@@ -97,9 +96,10 @@ def get_movies_by_category(category: str = Query(..., min_length=5, max_length=1
 
 @app.post("/newMovie", tags=["movies"])
 def create_movie(movie: Movies):
-  movie.id = len(movies) + 1
-  movie_dict = movie.dict()
-  movies.append(movie_dict)
+  db = Session()
+  new_movie = MovieModel(**movie.dict())
+  db.add(new_movie)
+  db.commit()
   return JSONResponse({'message': 'Movie created successfully'})
 
 
